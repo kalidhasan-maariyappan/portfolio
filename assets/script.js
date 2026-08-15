@@ -48,17 +48,18 @@ if (projectSection) {
     <div class="showcase-list">
       <a class="showcase-project" href="project-emr.html" data-tone="clinical">
         <div class="showcase-copy"><div class="project-label"><span>Healthcare platform</span><span>Practice Manager - Patient Portal - Claims</span></div><h3>Enterprise Healthcare EMR Platform</h3><p class="project-summary">Commercial EMR platform used by multiple healthcare organizations and medical practices across Practice Manager, Patient Portal, and Collaborator Portal modules.</p><ol class="module-list"><li><b>Application modules</b><span>Developed screens, backend services, APIs, business logic, and PostgreSQL functionality for healthcare workflows.</span></li><li><b>Insurance claims</b><span>Implemented EDI-based claim processing with ClaimMD for medical claims and Vyne for dental claims.</span></li><li><b>Payments and support</b><span>Integrated PayROC APIs, optimized SQL queries, resolved production defects, and improved reliability.</span></li></ol><div class="project-footer"><small>ColdFusion - Lucee - ColdBox - JavaScript - PostgreSQL - REST APIs - AWS S3</small><strong>Full case study -></strong></div></div>
-        <div class="showcase-visual"><img src="assets/project-practicemanager-showcase.png" alt="Healthcare platform dashboard showing patient lifecycle, clinical workflows, claims, payments, and secure infrastructure"><span class="project-index">01</span></div>
+        <div class="showcase-visual"><img src="assets/project-healthcare-santhiya.png" alt="Enterprise healthcare EMR product dashboard showing Practice Manager, Patient Portal, Collaborator Portal, REST APIs, PostgreSQL, EDI claims, ClaimMD, Vyne, PayROC, AWS S3, and production support"><span class="project-index">01</span></div>
       </a>
       <a class="showcase-project image-left" href="project-invoice.html" data-tone="publishing">
-        <div class="showcase-visual invoice-showcase"><div><span>Invoice queue</span><b>Billing operations, reports, users, payments, refunds, and voids</b><small>ColdFusion - Lucee - PostgreSQL - REST APIs</small></div></div>
+        <div class="showcase-visual"><img src="assets/project-invoice-showcase.png" alt="Invoice management product dashboard showing invoice queue, billing workflow, users, payments, reports, gateways, REST APIs, PostgreSQL, and production support"><span class="project-index">02</span></div>
         <div class="showcase-copy"><div class="project-label"><span>Invoice management</span><span>Billing - Reporting - Transactions</span></div><h3>Invoice Management System</h3><p class="project-summary">Enterprise billing product supporting invoice workflows, payment transactions, reporting, user administration, backend APIs, and production issue resolution.</p><ol class="module-list"><li><b>Billing modules</b><span>Developed invoice management, reporting, user administration, and transaction processing modules.</span></li><li><b>Payment workflows</b><span>Implemented sale, refund, and void operations through payment gateway integrations.</span></li><li><b>Backend delivery</b><span>Built REST APIs, PostgreSQL queries, business logic, UI enhancements, and stability fixes.</span></li></ol><div class="project-footer"><small>ColdFusion - Lucee - JavaScript - jQuery - AJAX - PostgreSQL</small><strong>Full case study -></strong></div></div>
       </a>
     </div>`;
 }
 
 const caseVisuals = {
-  'project-emr.html': ['assets/project-practicemanager-showcase.png', 'Healthcare platform dashboard showing patient lifecycle, clinical workflows, claims, payments, and secure infrastructure']
+  'project-emr.html': ['assets/project-healthcare-santhiya.png', 'Enterprise healthcare EMR product dashboard showing Practice Manager, Patient Portal, Collaborator Portal, REST APIs, PostgreSQL, EDI claims, ClaimMD, Vyne, PayROC, AWS S3, and production support'],
+  'project-invoice.html': ['assets/project-invoice-showcase.png', 'Invoice management product dashboard showing invoice queue, billing workflow, users, payments, reports, gateways, REST APIs, PostgreSQL, and production support']
 };
 
 const caseKey = location.pathname.split('/').pop();

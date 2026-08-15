@@ -668,6 +668,20 @@ img,video,canvas,svg{max-width:100%;height:auto}
   color:#111;
   font-size:clamp(90px,18vw,240px)!important;
 }
+.invoice-hero .case-cover{
+  width:100%;
+  height:auto;
+  border-radius:14px;
+  box-shadow:0 26px 70px rgba(0,0,0,.32);
+}
+.invoice-hero:has(.case-cover){
+  min-height:0!important;
+  height:auto!important;
+  background:#111!important;
+}
+.invoice-hero:has(.case-cover)>span{
+  display:none!important;
+}
 @media(max-width:760px){
   .invoice-showcase{
     min-height:0;
