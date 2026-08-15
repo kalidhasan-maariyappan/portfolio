@@ -1,0 +1,1278 @@
+Yes. Based on everything we’ve discussed, your **PracticeManager** project is much bigger than a normal EMR. It is essentially an **end-to-end healthcare practice management + clinical EMR + billing platform**, mainly supporting U.S. healthcare practices, including dental/oral-surgery workflows.
+
+## PracticeManager — Project Explanation
+
+### 1. What is PracticeManager?
+
+**PracticeManager** is a multi-tenant healthcare application used by medical/dental practices to manage the complete lifecycle of a patient.
+
+It covers everything from:
+
+**Patient referral → Registration → Appointment → Clinical treatment → Insurance → Billing → Payment → Follow-up → Reporting**
+
+So the application is not just storing patient records. It is running the **day-to-day operations of a healthcare practice**.
+
+A simplified flow is:
+
+```text
+Patient / Referral
+      ↓
+Registration
+      ↓
+Insurance
+      ↓
+Appointment Scheduling
+      ↓
+Check-In
+      ↓
+Clinical Examination
+      ↓
+Treatment / Procedure
+      ↓
+Clinical Documentation
+      ↓
+Insurance Claim
+      ↓
+Invoice
+      ↓
+Payment / Collection
+      ↓
+Reports / Follow-up
+```
+
+---
+
+# 2. Main Applications in the Ecosystem
+
+From our discussions, your healthcare ecosystem contains multiple applications/services.
+
+### PracticeManager / EMR Portal
+
+This is the main application used internally by:
+
+* Doctors/providers
+* Nurses/clinical staff
+* Front-desk staff
+* Billing staff
+* Practice administrators
+* Other authorized employees
+
+Most of the actual practice-management and EMR functionality lives here.
+
+### Patient Portal
+
+This is the patient-facing application.
+
+Patients can interact with the practice for things such as:
+
+* Registration
+* Forms
+* Appointment information
+* Check-in
+* Documents
+* Communications
+* Billing/payment-related workflows
+
+You have also been working on making this portal responsive across desktop, tablet, and mobile.
+
+### Collaborator Portal
+
+This supports external healthcare collaborators/referral-related workflows.
+
+For example, referring providers or organizations may need access to information related to the patients they referred.
+
+### REST/API Services
+
+The platform also contains API services used for integrations and communication between applications and external systems.
+
+### Background Jobs / Scheduled Processing
+
+Some operations don't happen directly during a user's browser request.
+
+Scheduled/background processes can handle things such as:
+
+* Notifications
+* Reminders
+* Batch processing
+* Insurance workflows
+* Recurring payment-related operations
+* Data synchronization
+* Maintenance activities
+
+### Chat / Communication Services
+
+The ecosystem also includes communication functionality used for patient/practice interaction.
+
+---
+
+# 3. Patient Management Module
+
+This is one of the core modules.
+
+It maintains the patient's healthcare identity inside the practice.
+
+Typical information includes:
+
+```text
+Patient
+├── Demographics
+├── Contact information
+├── Address
+├── Insurance
+├── Medical history
+├── Responsible party
+├── Referral information
+├── Appointments
+├── Clinical records
+├── Documents
+├── Claims
+├── Invoices
+├── Payments
+└── Communications
+```
+
+Because this is healthcare data, much of it is considered **PHI — Protected Health Information**.
+
+The application therefore has additional security requirements compared with a normal business application.
+
+---
+
+# 4. Patient Registration Module
+
+Registration is where the patient's information enters the system.
+
+It can capture things such as:
+
+* First/last name
+* DOB
+* Gender
+* Phone
+* Email
+* Address
+* Insurance information
+* Emergency/contact information
+* Medical information
+* Practice-related information
+
+The registration process may originate through staff or through the Patient Portal.
+
+You recently discussed an important communication preference rule here.
+
+By default, both communication methods can be selected during registration.
+
+The patient can have a:
+
+```text
+preferred_contact_type
+```
+
+which controls whether communications should be sent through the preferred channel.
+
+However, certain important healthcare communications should still go to **both** supported channels, including:
+
+* Registration link
+* Forms link
+* Appointment confirmation
+* Appointment reminder
+* Appointment check-in
+* Invoices
+
+Other communication should respect `preferred_contact_type`.
+
+---
+
+# 5. Referral Module
+
+Referral management is important especially for specialty healthcare/dental practices.
+
+A patient may be referred from:
+
+* Another doctor
+* Dentist
+* Healthcare provider
+* Clinic
+* Organization
+
+The application needs to connect:
+
+```text
+Referring Provider
+      ↓
+Referral
+      ↓
+Patient
+      ↓
+Appointment
+      ↓
+Treatment
+      ↓
+Clinical outcome
+```
+
+This allows the practice to know where the patient originated and maintain communication with referring providers when necessary.
+
+---
+
+# 6. Appointment & Scheduling Module
+
+The scheduling system manages provider availability and patient appointments.
+
+It includes concepts such as:
+
+* Provider
+* Appointment
+* Date/time
+* Appointment type
+* Execution type
+* Subtype
+* Status
+* Location
+* Filters
+* Calendar views
+
+You have worked directly on bugs involving provider filters, appointment dates, execution-type filtering, and subtype filtering.
+
+The high-level workflow is:
+
+```text
+Provider availability
+      ↓
+Patient selects / receives appointment
+      ↓
+Appointment scheduled
+      ↓
+Confirmation sent
+      ↓
+Reminder sent
+      ↓
+Patient arrives
+      ↓
+Check-in
+      ↓
+Clinical visit
+```
+
+The UI also uses calendar-style functionality, including FullCalendar.
+
+---
+
+# 7. Appointment Confirmation & Reminder Module
+
+After an appointment is created, PracticeManager needs to make sure patients actually know about it.
+
+That creates multiple communication workflows:
+
+```text
+Appointment Created
+      ↓
+Confirmation
+      ↓
+Reminder
+      ↓
+Check-in notification
+      ↓
+Patient arrives
+```
+
+These are considered important enough that your current business requirement specifies that they can still be delivered through **both contact channels**, regardless of the normal preferred-contact rule.
+
+---
+
+# 8. Patient Check-In
+
+Before the clinical visit starts, the patient goes through check-in.
+
+Depending on the practice, this may involve:
+
+* Appointment verification
+* Patient verification
+* Registration information review
+* Forms completion
+* Insurance verification
+* Medical-history updates
+* Consent
+* Provider notification
+
+The Patient Portal can participate in this process through appointment check-in links.
+
+---
+
+# 9. Forms Module
+
+Healthcare practices require many patient forms.
+
+Examples include:
+
+* Registration forms
+* Medical history forms
+* Consent forms
+* Procedure forms
+* Practice-specific questionnaires
+
+PracticeManager can send a forms link to patients so that the information can be completed digitally.
+
+The completed information eventually becomes part of the patient's clinical/practice record.
+
+---
+
+# 10. EMR / Clinical Module
+
+This is the actual **Electronic Medical Record** portion.
+
+Once the patient reaches the provider, the clinical workflow begins.
+
+Conceptually:
+
+```text
+Patient
+   ↓
+Medical History
+   ↓
+Clinical Examination
+   ↓
+Diagnosis
+   ↓
+Treatment Plan
+   ↓
+Procedure
+   ↓
+Clinical Notes
+   ↓
+Provider Signature
+   ↓
+Final Clinical Record
+```
+
+This can contain highly sensitive PHI and therefore has stricter authorization, auditing, and data-protection requirements.
+
+---
+
+# 11. Treatment Plan Module
+
+The provider determines what treatment the patient requires.
+
+A treatment plan may connect:
+
+* Diagnosis
+* Procedures
+* Teeth/areas involved
+* Estimated treatment
+* Insurance coverage
+* Patient responsibility
+* Appointment planning
+
+Treatment plans effectively connect the clinical and financial portions of the application.
+
+```text
+Diagnosis
+   ↓
+Treatment Plan
+   ↓
+Procedure
+   ├── Clinical documentation
+   ├── Insurance claim
+   └── Patient charge
+```
+
+---
+
+# 12. Clinical Notes
+
+Providers document what happened during a patient visit.
+
+Clinical notes may contain:
+
+* Examination findings
+* Diagnosis
+* Procedures
+* Observations
+* Treatment performed
+* Follow-up instructions
+* Provider information
+
+Because clinical notes are part of the official medical record, they require stronger controls than ordinary application text.
+
+---
+
+# 13. Imaging / Documents Module
+
+The system also manages healthcare documents and images.
+
+These can include:
+
+* Patient documents
+* Clinical images
+* Scans
+* PDFs
+* Uploaded forms
+* Supporting claim documents
+* Procedure-related documentation
+
+You have also dealt with scenarios around **image categories**, including deleted categories where existing images still need to remain viewable correctly.
+
+The important distinction is:
+
+```text
+Category deleted
+      ≠
+Historical image deleted
+```
+
+Existing clinical data often must remain available even when configuration data changes later.
+
+---
+
+# 14. Anesthesia / Procedure Workflows
+
+Your PracticeManager documentation also includes anesthesia-related workflows.
+
+For specialty practices such as oral surgery, a procedure may involve:
+
+* Pre-operative information
+* Anesthesia information
+* Procedure details
+* Monitoring
+* Clinical documentation
+* Post-operative information
+
+These records become part of the patient's medical history.
+
+---
+
+# 15. Insurance Module
+
+Insurance is another major part of the application.
+
+The basic process is:
+
+```text
+Patient
+   ↓
+Insurance information
+   ↓
+Eligibility verification
+   ↓
+Procedure
+   ↓
+Claim creation
+   ↓
+Clearinghouse
+   ↓
+Insurance payer
+   ↓
+Response / payment
+```
+
+The application handles both medical and dental insurance workflows.
+
+You have specifically worked with integrations such as:
+
+**ClaimMD** for medical workflows and **Vyne** for dental workflows.
+
+---
+
+# 16. Insurance Eligibility
+
+Before treatment, a practice may need to determine whether the patient's insurance is active and what benefits are available.
+
+Conceptually:
+
+```text
+Patient Insurance
+       ↓
+Eligibility Request
+       ↓
+Clearinghouse / Payer
+       ↓
+Eligibility Response
+       ↓
+Coverage information
+```
+
+This helps the practice understand expected insurance coverage before providing treatment.
+
+---
+
+# 17. EDI / X12 Module
+
+You have also been working with healthcare EDI.
+
+In U.S. healthcare, insurance transactions commonly use **X12** standards.
+
+You specifically investigated:
+
+* 837P — Professional claims
+* 837D — Dental claims
+* X222A1 validation
+* JSON → EDI generation
+* EDI validation
+* EDI parsing
+* Stedi HIPAA inspection
+
+Conceptually:
+
+```text
+PracticeManager Data
+        ↓
+JSON / Internal Model
+        ↓
+X12 Generator
+        ↓
+837P / 837D
+        ↓
+Validation
+        ↓
+Clearinghouse
+        ↓
+Insurance Payer
+```
+
+---
+
+# 18. Claims Module
+
+Once treatment is completed, eligible procedures can become insurance claims.
+
+A claim contains information about:
+
+* Patient
+* Provider
+* Insurance
+* Diagnosis
+* Procedures
+* Charges
+* Dates of service
+* Practice information
+
+The lifecycle is approximately:
+
+```text
+Treatment
+   ↓
+Claim generated
+   ↓
+Claim validated
+   ↓
+Claim submitted
+   ↓
+Clearinghouse
+   ↓
+Insurance payer
+   ↓
+Accepted / Rejected / Paid
+   ↓
+PracticeManager updated
+```
+
+---
+
+# 19. Billing Module
+
+Not everything is paid by insurance.
+
+PracticeManager therefore also handles patient financial responsibility.
+
+Billing connects:
+
+```text
+Procedure charges
+      ↓
+Insurance responsibility
+      +
+Patient responsibility
+      ↓
+Invoice
+      ↓
+Payment
+      ↓
+Outstanding balance
+```
+
+Invoices are another communication type that your new preferred-contact requirement says should continue being delivered to both appropriate communication channels.
+
+---
+
+# 20. Accounts Receivable
+
+The A/R side answers:
+
+> How much money is still owed to the practice?
+
+The system needs to track outstanding balances from:
+
+* Patients
+* Insurance companies
+* Other responsible parties
+
+You previously identified that the real aging/A/R logic is primarily located in the reporting/patient DAO layers rather than the misleadingly named `accounts_receivable.cfc`, which mostly handles things such as NCOA and paper-statement mail logs.
+
+Typical aging categories can conceptually look like:
+
+```text
+0–30 days
+31–60 days
+61–90 days
+90+ days
+```
+
+This allows billing teams to prioritize collections.
+
+---
+
+# 21. Payment Processing
+
+PracticeManager integrates with **PayROC**.
+
+You have worked with payment operations such as:
+
+* Card sales
+* Keyed transactions
+* Refunds
+* Voids
+* Receipts
+* Batch/recurring transactions
+* Cardholder information
+* Payment history
+
+A simplified flow:
+
+```text
+Patient invoice
+      ↓
+Payment initiated
+      ↓
+PracticeManager
+      ↓
+PayROC
+      ↓
+Payment authorization
+      ↓
+Transaction result
+      ↓
+Receipt
+      ↓
+PracticeManager transaction record
+```
+
+You have specifically investigated receipt fields such as:
+
+* Cardholder name
+* Email
+* Billing address
+* Country
+
+and how those behave differently between normal and recurring/batch transactions.
+
+---
+
+# 22. Transactions Module
+
+The application keeps financial transaction history.
+
+This can include:
+
+```text
+Transactions
+├── Sale
+├── Refund
+├── Void
+├── Payment
+├── Adjustment
+└── Related gateway information
+```
+
+You have also worked on database changes around storing `cardholdername`, including handling encrypted/binary storage.
+
+---
+
+# 23. Communication Module
+
+PracticeManager communicates with patients for many purposes.
+
+Examples include:
+
+* Registration
+* Forms
+* Appointments
+* Reminders
+* Check-in
+* Invoices
+* Other practice communications
+
+The new preferred-contact logic makes the model effectively:
+
+```text
+Communication Requested
+          ↓
+Is it a mandatory dual-channel communication?
+        /     \
+      Yes      No
+       ↓        ↓
+Send both   Read preferred_contact_type
+                 ↓
+            Send preferred channel
+```
+
+That makes communication preference a centralized business rule rather than something every individual feature should implement differently.
+
+---
+
+# 24. Reporting Module
+
+The application provides operational, clinical, and financial reporting.
+
+Examples include:
+
+* Patient reports
+* Appointment reports
+* Provider reports
+* Claims reports
+* Financial reports
+* Accounts receivable
+* Transaction/payment reports
+* Practice performance reports
+
+Reporting requires joining information across several modules.
+
+```text
+Patients
+Appointments
+Claims
+Transactions
+Invoices
+Providers
+Insurance
+        ↓
+Reporting Layer
+        ↓
+Practice / Management Decisions
+```
+
+---
+
+# 25. Provider Management
+
+Providers are central to the system.
+
+Provider data connects to:
+
+* Appointments
+* Patients
+* Clinical notes
+* Treatments
+* Claims
+* Practices
+* Locations
+* Permissions
+
+You have also recently worked with **user-provider preferences**, where users can select or activate providers that should appear in their workflows.
+
+---
+
+# 26. User / Role / Authorization Module
+
+Not every employee can access everything.
+
+The system needs roles and authorization such as:
+
+```text
+User
+   ↓
+Role / Permissions
+   ↓
+Practice
+   ↓
+Allowed functionality
+```
+
+Security must answer:
+
+> Who is the user?
+
+and separately:
+
+> What is this user allowed to access?
+
+That distinction is especially critical when handling PHI.
+
+---
+
+# 27. Multi-Tenant Architecture
+
+PracticeManager supports multiple healthcare organizations/practices.
+
+Therefore data must be tenant-scoped.
+
+You've encountered fields such as:
+
+```text
+company_id
+merchant_company_id
+```
+
+Conceptually:
+
+```text
+Practice A
+├── Patients
+├── Providers
+├── Claims
+└── Payments
+
+Practice B
+├── Patients
+├── Providers
+├── Claims
+└── Payments
+```
+
+A user from Practice A must never accidentally access Practice B's patient information.
+
+This is why **tenant isolation** is one of the most important security requirements in the entire application.
+
+---
+
+# 28. PHI Encryption
+
+PracticeManager stores sensitive healthcare information.
+
+Your PostgreSQL architecture includes column-level encryption using mechanisms such as:
+
+```text
+pgp_sym_encrypt()
+pgp_sym_decrypt()
+```
+
+with encrypted data keys associated with records.
+
+You've encountered queries similar to:
+
+```sql
+pgp_sym_decrypt(
+    provider_first_name,
+    edek_key
+)
+```
+
+The architecture also involves AWS KMS-based protection around encryption keys.
+
+Conceptually:
+
+```text
+Sensitive PHI
+     ↓
+Encryption
+     ↓
+Encrypted DB value
+     +
+Encrypted Data Encryption Key (EDEK)
+     ↓
+Database
+```
+
+---
+
+# 29. AWS Infrastructure
+
+Your platform uses AWS infrastructure, including services such as:
+
+* EC2
+* ECS
+* S3
+* RDS
+* KMS
+* IAM
+* Route 53
+* Load balancing
+* Elastic Beanstalk/ECR in parts of the wider environment
+
+S3 is particularly relevant for file/document storage.
+
+You've also been involved in moving legacy AWS authentication toward **IAM-role-based access**, including the `feature/s3-iam-role-migration` work.
+
+The target approach is:
+
+```text
+Application
+    ↓
+IAM Role
+    ↓
+Temporary AWS credentials
+    ↓
+AWS services
+```
+
+instead of embedding static AWS credentials in the application.
+
+---
+
+# 30. Security Layer
+
+Because this is a U.S. healthcare application, security is a major architectural concern.
+
+You've been reviewing areas such as:
+
+* Authentication
+* Authorization
+* Tenant isolation
+* PHI exposure
+* IDOR
+* SQL injection
+* XSS
+* CSRF
+* CORS
+* Sessions
+* Cookies
+* File uploads/downloads
+* APIs
+* Remote CFC endpoints
+* Payment data
+* Claims
+* Documents
+* Messaging
+* Secrets
+
+You also investigated implementing centralized CSRF protection in ColdBox rather than manually putting CSRF logic into every form/controller.
+
+---
+
+# 31. Public URL Validation
+
+Some PracticeManager pages are accessed through externally generated links containing identifiers such as UUIDs.
+
+For example:
+
+```text
+/confirmation/appointment/{appointmentUUID}/logid/{logUUID}
+```
+
+Those IDs must be validated before accessing resources.
+
+Conceptually:
+
+```text
+Request
+   ↓
+Identifier present?
+   ↓
+Validate format
+   ↓
+Validate existence/access
+   ↓
+Valid → Continue
+Invalid → NotFound
+```
+
+You wanted this centralized using ColdBox interceptors rather than repeating validation inside every handler.
+
+---
+
+# 32. Backend Architecture
+
+Your main stack is CFML running on Lucee/Adobe ColdFusion, with ColdBox increasingly becoming the application architecture.
+
+The application follows layers similar to:
+
+```text
+Request
+   ↓
+Routes
+   ↓
+Interceptors
+   ↓
+Handlers / Controllers
+   ↓
+Services
+   ↓
+DAO
+   ↓
+PostgreSQL
+   ↓
+Response / View
+```
+
+ColdBox also provides:
+
+* Dependency injection through WireBox
+* Modules
+* Interceptors
+* Routing
+* Event handling
+
+The application is largely an HMVC/monolithic application rather than a pure microservice architecture.
+
+---
+
+# 33. Legacy FW/1 Components
+
+Parts of your project/history also use **FW/1**.
+
+You've dealt with issues such as:
+
+* Layout handling
+* `request.layout=false`
+* `disableLayout()`
+* CFC endpoints
+* AJAX calls
+
+So part of your work involves maintaining legacy architecture while modernizing other sections toward ColdBox.
+
+---
+
+# 34. Front-End Architecture
+
+The frontend is mainly server-rendered rather than React SPA architecture.
+
+Technologies include:
+
+* HTML
+* CSS
+* JavaScript
+* jQuery
+* Bootstrap
+* Tailwind in some areas
+* DataTables
+* FullCalendar
+* SweetAlert
+* TinyMCE
+* Select2
+* MDBootstrap components
+
+You've worked on replacing certain Select2 implementations with MDBootstrap Select and improving responsive behavior without changing business logic.
+
+---
+
+# 35. PostgreSQL Database
+
+PostgreSQL is a major database for PracticeManager.
+
+Major entities conceptually include:
+
+```text
+users
+providers
+accounts / patients
+appointments
+insurance
+claims
+transactions
+invoices
+messages
+documents
+treatment plans
+provider preferences
+```
+
+There is significant complexity because some searchable patient information is encrypted.
+
+That affects query performance because searching encrypted columns may require decryption.
+
+You've already been investigating performance improvements where expensive patient checks were decrypting many PHI fields and running multiple queries unnecessarily.
+
+---
+
+# 36. Performance Engineering
+
+Performance is not simply about speeding up CFML.
+
+Your performance work includes:
+
+```text
+Browser
+   ↓
+JavaScript/AJAX
+   ↓
+ColdFusion
+   ↓
+DAO
+   ↓
+PostgreSQL
+   ↓
+Decryption
+   ↓
+Network / external services
+```
+
+One expensive query anywhere in that chain can slow the entire feature.
+
+You've specifically looked at indexing fields such as:
+
+```text
+accounts(account_identifier)
+```
+
+and composite tenant-aware indexes such as:
+
+```text
+(merchant_company_id, account_identifier)
+```
+
+to avoid expensive PHI-decryption-based existence checks.
+
+---
+
+# 37. Document/PDF Services
+
+Your wider healthcare platform also uses Node.js-based PDF/utility services.
+
+These can support document-generation workflows where the CFML application hands information to another service and receives a generated document.
+
+---
+
+# 38. QR / Email Workflows
+
+You've also implemented QR-based email functionality using Lucee/ColdFusion.
+
+Your working implementation generated a QR image in memory and embedded it directly inside an email rather than depending on a public file URL.
+
+That fits into workflows such as secure registration/setup links or other patient/user communications.
+
+---
+
+# 39. 3D Clinical Visualization POC
+
+You've experimented with a Three.js human-body visualization.
+
+The idea was to provide a clinical interface where staff could:
+
+* View a human body
+* Select regions
+* Add pointer annotations
+* Highlight locations
+* Interact with the visualization
+
+This was primarily a frontend proof of concept.
+
+---
+
+# 40. Your Overall Technical Architecture
+
+Putting everything together:
+
+```text
+                       ┌─────────────────┐
+                       │   Patient       │
+                       └────────┬────────┘
+                                │
+                     ┌──────────▼──────────┐
+                     │   Patient Portal    │
+                     └──────────┬──────────┘
+                                │
+          ┌─────────────────────▼─────────────────────┐
+          │              PracticeManager              │
+          │                                           │
+          │ Patient Management                        │
+          │ Referrals                                 │
+          │ Scheduling                                │
+          │ Clinical EMR                              │
+          │ Treatment Plans                           │
+          │ Documents / Imaging                       │
+          │ Insurance                                 │
+          │ Claims                                    │
+          │ Billing                                   │
+          │ Payments                                  │
+          │ Communications                            │
+          │ Reporting                                 │
+          └─────────────────────┬─────────────────────┘
+                                │
+                   ┌────────────▼────────────┐
+                   │ ColdFusion / Lucee      │
+                   │ ColdBox / legacy FW/1   │
+                   └────────────┬────────────┘
+                                │
+                     ┌──────────▼──────────┐
+                     │    PostgreSQL       │
+                     │ Encrypted PHI       │
+                     └──────────┬──────────┘
+                                │
+          ┌─────────────────────┼──────────────────────┐
+          │                     │                      │
+          ▼                     ▼                      ▼
+       PayROC               ClaimMD/Vyne             AWS
+      Payments                 EDI              S3/KMS/RDS/etc.
+```
+
+# 41. The Business Purpose in One Story
+
+Imagine a patient named **John** is referred to an oral-surgery practice.
+
+The referring dentist sends John to the practice.
+
+PracticeManager creates or identifies John's patient record.
+
+John receives a registration link and completes his demographic, medical, and insurance information through the Patient Portal.
+
+His insurance details are checked.
+
+The front desk schedules an appointment with the correct surgeon.
+
+John receives his confirmation and reminder.
+
+On appointment day, John completes check-in and any required forms.
+
+The surgeon opens John's EMR, reviews his history and imaging, performs an examination, creates a diagnosis and treatment plan, and eventually performs the procedure.
+
+Clinical notes and procedure information become part of John's medical record.
+
+The billing workflow calculates charges.
+
+If insurance applies, PracticeManager generates the necessary claim data and sends it through the appropriate medical/dental EDI workflow.
+
+The payer processes the claim.
+
+Any remaining patient responsibility becomes an invoice.
+
+John receives the invoice and pays through the PayROC integration.
+
+The transaction is recorded.
+
+If money remains outstanding, it appears in accounts receivable.
+
+At the same time, management can use reporting modules to understand appointments, claims, payments, provider activity, and practice performance.
+
+**That complete journey is essentially what your PracticeManager platform exists to manage.**
+
+So when you look at your project as a whole, think of it as these major domains:
+
+```text
+PRACTICEMANAGER
+│
+├── 1. Patient Management
+├── 2. Patient Registration
+├── 3. Referral Management
+├── 4. Provider Management
+├── 5. Scheduling / Appointments
+├── 6. Appointment Communications
+├── 7. Check-In
+├── 8. Patient Forms
+├── 9. EMR / Clinical Records
+├── 10. Medical History
+├── 11. Treatment Planning
+├── 12. Clinical Notes
+├── 13. Imaging / Documents
+├── 14. Procedures / Anesthesia
+├── 15. Insurance
+├── 16. Eligibility
+├── 17. EDI / X12
+├── 18. Claims
+├── 19. Billing
+├── 20. Invoices
+├── 21. Payments / PayROC
+├── 22. Transactions
+├── 23. Accounts Receivable
+├── 24. Communications
+├── 25. Reporting
+├── 26. User / Role Management
+├── 27. Multi-Tenant Security
+├── 28. PHI Encryption
+├── 29. Documents / AWS S3
+├── 30. REST APIs
+├── 31. Background Jobs
+├── 32. Patient Portal
+├── 33. Collaborator Portal
+└── 34. Administration / Configuration
+```
+
+The key thing is that these aren't independent modules. They form one continuous **patient + clinical + financial workflow**.
+
+**Patient → Appointment → Clinical Care → Claim → Payment** is the backbone of the entire system.
