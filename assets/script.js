@@ -1,0 +1,7 @@
+const menu=document.querySelector('.menu'),nav=document.querySelector('nav');
+if(menu)menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',open);menu.textContent=open?'Close':'Menu'});
+document.querySelectorAll('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());
+const track=document.querySelector('.showcase-track'),slideNum=document.querySelector('#slideNum');let slide=0;
+document.querySelectorAll('[data-slide]').forEach(btn=>btn.addEventListener('click',()=>{slide=(slide+(btn.dataset.slide==='next'?1:2))%3;track.style.transform=`translateX(-${slide*33.333}%)`;slideNum.textContent=String(slide+1).padStart(2,'0')}));
+const filters=document.querySelectorAll('[data-filter]');filters.forEach(btn=>btn.addEventListener('click',()=>{filters.forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.work-card').forEach(card=>card.classList.toggle('hidden',btn.dataset.filter!=='all'&&!card.dataset.category.includes(btn.dataset.filter)))}));
+const form=document.querySelector('#inquiryForm');if(form)form.addEventListener('submit',e=>{e.preventDefault();const d=new FormData(form);const subject=encodeURIComponent(`Project inquiry from ${d.get('name')}`);const body=encodeURIComponent(`Name: ${d.get('name')}\nCompany: ${d.get('company')}\nBudget: ${d.get('budget')}\nTimeline: ${d.get('timeline')}\nProject type: ${d.get('type')}\n\n${d.get('description')}`);window.location.href=`mailto:kalidhasan.mariyappan@gmail.com?subject=${subject}&body=${body}`});
